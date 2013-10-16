@@ -17,21 +17,20 @@ class Migration(SchemaMigration):
         db.send_create_signal(u'waffle', ['FlagUser'])
 
         # Removing M2M table for field users on 'Flag'
-        db.delete_table(db.shorten_name(u'waffle_flag_users'))
+        db.delete_table(u'waffle_flag_users')
 
 
     def backwards(self, orm):
         # Deleting model 'FlagUser'
         db.delete_table(u'waffle_flaguser')
 
-        # Adding M2M table for field users on 'Flag'
-        m2m_table_name = db.shorten_name(u'waffle_flag_users')
-        db.create_table(m2m_table_name, (
+        # Adding M2M table for field users on 'Flag'      
+        db.create_table(u'waffle_flag_users', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('flag', models.ForeignKey(orm['waffle.flag'], null=False)),
             ('user', models.ForeignKey(orm['auth.user'], null=False))
         ))
-        db.create_unique(m2m_table_name, ['flag_id', 'user_id'])
+        db.create_unique(u'waffle_flag_users', ['flag_id', 'user_id'])
 
 
     models = {
