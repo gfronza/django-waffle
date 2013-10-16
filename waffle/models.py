@@ -4,6 +4,7 @@ except ImportError:
     from datetime import datetime
 
 from django.contrib.auth.models import Group
+from django.conf import settings
 from django.db import models
 
 from waffle.compat import User
@@ -38,7 +39,7 @@ class Flag(models.Model):
     groups = models.ManyToManyField(Group, blank=True, help_text=(
         'Activate this flag for these user groups.'))
     users = models.ManyToManyField(User, blank=True, help_text=(
-        'Activate this flag for these users.'))
+        'Activate this flag for these users.'), through='FlagUser')
     rollout = models.BooleanField(default=False, help_text=(
         'Activate roll-out mode?'))
     note = models.TextField(blank=True, help_text=(
@@ -54,6 +55,11 @@ class Flag(models.Model):
     def save(self, *args, **kwargs):
         self.modified = datetime.now()
         super(Flag, self).save(*args, **kwargs)
+
+
+class FlagUser(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    flag = models.ForeignKey(Flag)
 
 
 class Switch(models.Model):
